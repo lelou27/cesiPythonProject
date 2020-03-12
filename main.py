@@ -39,8 +39,10 @@ def getDatas():
             fileData = line.split(';')
             if (fileData[0] != '' and fileData[0].isdigit()):
                 datas.append(fileData)
-            elif (fileData[0] == '' and fileData[1] != ''):
-                datas.append(fileData)
+            elif(fileData[0] == '' or fileData[0].isdigit() == False):
+                if(len(fileData) > 1):
+                    if(fileData[1] != '' and fileData[1].isdigit()):
+                        datas.append(fileData)
         except:
             raise ParseError
 
