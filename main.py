@@ -1,5 +1,5 @@
 try :
-    file = open("coucou.csv", "r")
+    file = open("coty.csv", "r")
 
     for line in file:
         line =line.rstrip('\n\r')
