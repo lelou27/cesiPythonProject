@@ -1,17 +1,20 @@
 def constructColumn(row):
-    column = ''
-    column += "'" + (row[1],row[0])[row[0] != ''] + "';"
-    column += "'" + row[2].strip() + " " + row[3].strip() + " ML" + "';"
-    column += "'" + row[3].strip() + "';"
-    column += "'" + row[4].strip() + "';"
-    column += "'" + row[7].strip() + "';"
-    column += "'" + row[5].strip() + "';"
-    column += "'" + row[6].strip() + "';"
-    column += "'" + '' + "';"
-    column += "'" + '' + "';"
-    column += "'" + '' + "\n"
+    try :
+        column = ''
+        column += "'" + (row[1],row[0])[row[0] != ''] + "';"
+        column += "'" + row[2].strip() + " " + row[3].strip() + " ML" + "';"
+        column += "'" + row[3].strip().isdigit() + "';"
+        column += "'" + row[4].strip() + "';"
+        column += "'" + row[7].strip() + "';"
+        column += "'" + row[5].strip() + "';"
+        column += "'" + row[6].strip() + "';"
+        column += "'" + '' + "';"
+        column += "'" + '' + "';"
+        column += "'" + '' + "\n"
 
-    return column
+        return column
+    except:
+        raise TypeError
 
 class ParseError(Exception):
     def __init__(self, *args):
@@ -57,7 +60,13 @@ except FileNotFoundError:
 except ParseError:
     print('Impossible de parser le fichier')
 
+try:
+    f = open('datas.csv', 'w')
+except FileNotFoundError:
+    print("Impossible d'ouvrir le fichier")
 
-f = open('datas.csv', 'w')
-for r in datas:
-    f.write(constructColumn(r))
+try:
+    for r in datas:
+        f.write(constructColumn(r))
+except TypeError:
+    print('erreur lors de la création de la ligne')
