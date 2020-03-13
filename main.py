@@ -1,20 +1,43 @@
-def constructColumn(row):
-    try :
-        column = ''
-        column += "'" + (row[1],row[0])[row[0] != ''] + "';"
-        column += "'" + row[2].strip() + " " + row[3].strip() + " ML" + "';"
-        column += "'" + row[3].strip().isdigit() + "';"
-        column += "'" + row[4].strip() + "';"
-        column += "'" + row[7].strip() + "';"
-        column += "'" + row[5].strip() + "';"
-        column += "'" + row[6].strip() + "';"
-        column += "'" + '' + "';"
-        column += "'" + '' + "';"
-        column += "'" + '' + "\n"
+def isValid(row):
+    print(row)
+    valid = False
 
-        return column
-    except:
-        raise TypeError
+    if (conditionValidationDigit(row[3])) \
+            or (conditionValidationDigit(row[4])) \
+            or (conditionValidationDigit(row[5])) \
+            or (conditionValidationDigit(row[6])) \
+            or (conditionValidationDigit(row[7])):
+        valid = True
+
+    return valid
+
+
+def conditionValidationDigit(row):
+    valid = False
+    print(row.isnumeric())
+    if row != None and row.isnumeric() == True:
+        valid = True
+
+    return valid
+
+
+def constructColumn(row):
+    column = ''
+    column += (row[1], row[0])[row[0] != ''] + ";"
+    column += "'" + row[2].strip() + " " + row[3].strip() + " ML" + "';"
+    column += row[3].strip() + ";"
+    column += row[4].strip() + ";"
+    column += row[7].strip() + ";"
+    column += row[5].strip() + ";"
+    column += row[6].strip() + ";"
+    column += "'" + '' + "';"
+    column += "'" + '' + "';"
+    column += "'" + '' + "\n"
+
+    print(column)
+
+    return column
+
 
 class ParseError(Exception):
     def __init__(self, *args):
@@ -26,14 +49,15 @@ class ParseError(Exception):
     def __str__(self):
         return self.message
 
+
 def getDatas():
-    file=None
+    file = None
     try:
         file = open("coty.csv", "r")
     except:
         raise FileNotFoundError
 
-    if file == None : raise FileNotFoundError
+    if file == None: raise FileNotFoundError
 
     datas = []
     for line in file:
@@ -42,9 +66,9 @@ def getDatas():
             fileData = line.split(';')
             if (fileData[0] != '' and fileData[0].isdigit()):
                 datas.append(fileData)
-            elif(fileData[0] == '' or fileData[0].isdigit() == False):
-                if(len(fileData) > 1):
-                    if(fileData[1] != '' and fileData[1].isdigit()):
+            elif (fileData[0] == '' or fileData[0].isdigit() == False):
+                if (len(fileData) > 1):
+                    if (fileData[1] != '' and fileData[1].isdigit()):
                         datas.append(fileData)
         except:
             raise ParseError
@@ -62,11 +86,16 @@ except ParseError:
 
 try:
     f = open('datas.csv', 'w')
+    fe = open('error.csv', 'w')
 except FileNotFoundError:
     print("Impossible d'ouvrir le fichier")
 
 try:
     for r in datas:
-        f.write(constructColumn(r))
+        if isValid(r):
+            f.write(constructColumn(r))
+        else:
+            fe.write(constructColumn(r))
+
 except TypeError:
     print('erreur lors de la création de la ligne')
