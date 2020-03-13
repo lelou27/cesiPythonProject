@@ -1,5 +1,4 @@
 def isValid(row):
-    print(row)
     valid = False
 
     if (conditionValidationDigit(row[3])) \
@@ -14,7 +13,6 @@ def isValid(row):
 
 def conditionValidationDigit(row):
     valid = False
-    print(row.isnumeric())
     if row != None and row.isnumeric() == True:
         valid = True
 
@@ -22,6 +20,21 @@ def conditionValidationDigit(row):
 
 
 def constructColumn(row):
+    dict = {
+        "EDP": "Eau de parfum",
+        "EAU DE PARFUM": "Eau de parfum",
+        "EDT": "Eau de toilette",
+        "EAU DE TOILETTE": "Eau de toilette",
+        "DEO": "Deodorant",
+        "DEODORANT": "Deodorant",
+        "BODY LOTION": "Body lotion",
+        "SHOWER GEL": "Shower gel",
+        "AFTER SHAVE": "After shave"
+    }
+    type = ""
+    for x, y in dict.items():
+        if ((row[2].upper()).__contains__(x)): type = y
+
     column = ''
     column += (row[1], row[0])[row[0] != ''] + ";"
     column += "'" + row[2].strip() + " " + row[3].strip() + " ML" + "';"
@@ -30,11 +43,9 @@ def constructColumn(row):
     column += row[7].strip() + ";"
     column += row[5].strip() + ";"
     column += row[6].strip() + ";"
-    column += "'" + '' + "';"
-    column += "'" + '' + "';"
-    column += "'" + '' + "\n"
-
-    print(column)
+    column += "'" + type + "';"
+    column += "'" + row[int(len(row))-1].strip() + "';"
+    column += "\n"
 
     return column
 
@@ -50,24 +61,12 @@ class ParseError(Exception):
         return self.message
 
 
-def getDatas():
-    file = None
-    try:
-        file = open("coty.csv", "r")
-        # file = open("test.csv", "r")
-    except:
-        raise FileNotFoundError
-
-    if file == None: raise FileNotFoundError
-
+def getDatas(tab):
     datas = []
     nbLignes = 0
-    for line in file:
+    for fileData in tab:
         try:
-            nbLignes+=1
-            line = line.rstrip('\n\r')
-            fileData = line.split(';')
-            print(fileData)
+            nbLignes += 1
             if (fileData[0] != '' and fileData[0].isdigit()):
                 datas.append(fileData)
             elif (fileData[0] == '' or fileData[0].isdigit() == False):
@@ -79,9 +78,43 @@ def getDatas():
     return datas
 
 
+def getModele():
+    file = None
+    try:
+        file = open("coty.csv", "r")
+    except:
+        raise FileNotFoundError
+
+    if file == None: raise FileNotFoundError
+
+    temp = []
+    for line in file:
+        try:
+            line = line.rstrip('\n\r')
+            fileData = line.split(';')
+            temp.append(fileData)
+        except:
+            raise ParseError
+    for i in range(len(temp)):
+        if (temp[i][0] != '' and temp[i][0].isdigit() and len(temp[i]) > 1 and i > 5):
+            if (temp[i][1] != ''):
+                for j in range(i):
+                    if (temp[i - j][0] == '' and temp[i - j][1] == '' and temp[i - j][2] != ''):
+                        if ((temp[i - j][2]).upper().__contains__("EAU DE")):
+                            index = (temp[i - j][2]).find("-")
+                            model = (temp[i - j][2])[0: index]
+                            temp[i].append(model)
+                            break
+                        else:
+                            temp[i].append((temp[i - j][2]))
+                            break
+    return temp
+
+
 try:
-    datas = getDatas()
-    for data in datas: print(data)
+    datas = getModele()
+    newdatas = getDatas(datas)
+    for data in newdatas: print(data)
 except FileNotFoundError:
     print("Impossible d'ouvrir le fichier")
 except ParseError:
@@ -94,11 +127,11 @@ except FileNotFoundError:
     print("Impossible d'ouvrir le fichier")
 
 try:
-    for r in datas:
+    for r in newdatas:
         if isValid(r):
-            f.write(constructColumn(r))
-        else:
             fe.write(constructColumn(r))
+        else:
+            f.write(constructColumn(r))
 
 except TypeError:
     print('erreur lors de la création de la ligne')
