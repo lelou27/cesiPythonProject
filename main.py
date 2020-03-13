@@ -3,10 +3,10 @@ def isValid(row):
     valid = False
 
     if (conditionValidationDigit(row[3])) \
-            or (conditionValidationDigit(row[4])) \
-            or (conditionValidationDigit(row[5])) \
-            or (conditionValidationDigit(row[6])) \
-            or (conditionValidationDigit(row[7])):
+            and (conditionValidationDigit(row[4])) \
+            and (conditionValidationDigit(row[5])) \
+            and (conditionValidationDigit(row[6])) \
+            and (conditionValidationDigit(row[7])):
         valid = True
 
     return valid
@@ -54,22 +54,25 @@ def getDatas():
     file = None
     try:
         file = open("coty.csv", "r")
+        # file = open("test.csv", "r")
     except:
         raise FileNotFoundError
 
     if file == None: raise FileNotFoundError
 
     datas = []
+    nbLignes = 0
     for line in file:
         try:
+            nbLignes+=1
             line = line.rstrip('\n\r')
             fileData = line.split(';')
+            print(fileData)
             if (fileData[0] != '' and fileData[0].isdigit()):
                 datas.append(fileData)
             elif (fileData[0] == '' or fileData[0].isdigit() == False):
-                if (len(fileData) > 1):
-                    if (fileData[1] != '' and fileData[1].isdigit()):
-                        datas.append(fileData)
+                if (len(fileData) > 1 and fileData[1] != '' and fileData[1].isdigit()):
+                    datas.append(fileData)
         except:
             raise ParseError
 
